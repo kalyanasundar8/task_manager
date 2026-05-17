@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { AuthService } from "./auth.service.js";
 import { redis } from "../../config/redis.connect.js";
+import { token } from "morgan";
 
 export class AuthController {
   static createUser = async (
@@ -62,7 +63,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: 7 * 60 * 1000,
+        maxAge: 7 * 60,
       });
 
       const session = {
@@ -92,21 +93,23 @@ export class AuthController {
     next: NextFunction,
   ) => {
     try {
-      const sessionData = await redis.get("session");
-      // console.log("Session data: ", sessionData);
+      const authHeader = req.headers.authorization;
 
-      if (!sessionData) {
-        res.status(401).json({
-          message: "Unauthorized",
-        });
+      if (!authHeader) {
+        return res.status(401).json({
+          message: "Not token provided"
+        })
       }
 
-      const data = JSON.parse(sessionData as string);
+      const token = authHeader.split(" ")[1] as string;
 
-      const user = await AuthService.refreshtoken(
-        data.userId,
-        data.refreshToken,
-      );
+      if (!token) {
+        return res.status(401).json({
+          message: "Invalid token format"
+        })
+      }
+
+      const user = await AuthService.refreshtoken(token);
 
       if (!user) {
         res.status(401).json({

@@ -72,16 +72,18 @@ export class AuthService {
     }
   };
 
-  static refreshtoken = async (userId: string, refreshToken: string) => {
+  static refreshtoken = async (refreshToken: string) => {
     try {
-      console.log("UserId", userId);
+      // console.log("UserId", userId);
       console.log("Refresh", refreshToken);
       const decoded = JWT.verify(
         refreshToken,
         process.env.SECRET_KEY as string,
       ) as { id: string };
 
-      const storedToken = await redis.get(`session`);
+      console.log(decoded.id);
+
+      const storedToken = await redis.get(`session:${decoded.id}`);
 
       console.log(storedToken);
 
@@ -95,7 +97,15 @@ export class AuthService {
 
       return { accessToken: newAccessToken };
     } catch (error) {
-      throw new Error("Unable to refresh token");
+      if (error instanceof JWT.TokenExpiredError) {
+        throw new Error("Refresh token is expired, please login again!");
+      }
+
+      if (error instanceof JWT.JsonWebTokenError) {
+        throw new Error("Invalid refresh token!");
+      }
+
+      throw error;
     }
   };
 }

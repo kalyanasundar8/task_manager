@@ -6,6 +6,7 @@ import { logger } from "./config/logger.js";
 import authRoute from "./modules/auth/auth.route.js";
 import taskRoute from "./modules/tasks/task.route.js";
 import parser from "cookie-parser";
+import { errorHandler } from "./middleware/error.middleware.js";
 
 export const createApp = async () => {
   const app = express();
@@ -26,5 +27,6 @@ export const createApp = async () => {
   app.use("/api/auth", authRoute);
   app.use("/api/task", taskRoute);
 
+  app.use(errorHandler);
   return app;
 };
