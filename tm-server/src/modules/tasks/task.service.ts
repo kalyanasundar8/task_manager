@@ -22,4 +22,20 @@ export class TaskService {
       throw new Error("Unable to get tasks");
     }
   };
+
+  static getTask = async (userId: string, taskId: string) => {
+    try {
+      const task = await Task.findOne({ assignedTo: userId, _id: taskId });
+
+      if (!task) {
+        throw new Error("Task not assigned to this user");
+      }
+
+      return task;
+
+    } catch (error) {
+      console.log(error);
+      throw new Error("Unable to get task");
+    }
+  }
 }

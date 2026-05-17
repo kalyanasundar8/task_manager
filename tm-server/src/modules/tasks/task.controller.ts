@@ -57,4 +57,22 @@ export class TaskController {
       next(error);
     }
   };
+
+  static getTask = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const taskId = req.params.taskId as string;
+
+      req.user = req.user as { id: string };
+      const userId = req.user.id;
+
+      const task = await TaskService.getTask(userId, taskId);
+
+      res.status(200).json({
+        message: "Task fetched successfuly",
+        response: task
+      })
+    } catch (error) {
+      next(error);
+    }
+  }
 }
