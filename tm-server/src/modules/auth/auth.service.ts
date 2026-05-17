@@ -83,11 +83,12 @@ export class AuthService {
 
       console.log(decoded.id);
 
-      const storedToken = await redis.get(`session:${decoded.id}`);
+      const redisCache = await redis.get(`session:${decoded.id}`);
+      const storedToken = JSON.parse(redisCache as string);
 
-      console.log(storedToken);
+      console.log(storedToken.refreshToken);
 
-      if (!storedToken || storedToken != refreshToken) {
+      if (!redisCache || storedToken.refreshToken != refreshToken) {
         throw new Error("Invalid or expired token");
       }
 
