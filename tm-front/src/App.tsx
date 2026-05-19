@@ -1,6 +1,7 @@
 import './App.css'
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import SignInForm from './features/auth/components/signup/SignInForm';
+import SignUpForm from './features/auth/components/signup/SignUpForm';
+import SignInForm from './features/auth/components/signin/SignInForm';
 
 function App() {
 
@@ -8,7 +9,8 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path='/signin' element={<SignInForm />}/>
+          <Route path='/signup' element={<SignUpForm />} />
+          <Route path='/signin' element={<SignInForm />} />
         </Routes>
       </BrowserRouter>
     </>
