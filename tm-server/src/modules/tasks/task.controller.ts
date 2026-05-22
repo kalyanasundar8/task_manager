@@ -17,12 +17,21 @@ export class TaskController {
       const data = req.body;
       req.user = req.user as { id: string };
       const currentUserId = req.user.id;
+      const assignedUserId = data.assignedTo || currentUserId;
       const task = await TaskService.createTask(data, currentUserId);
 
+      await redis.hSet(`task:${task._id}`, {
+        title: task.title,
+        assignedTo: String(task.assignedTo),
+        assignedBy: String(task.assignedBy)
+      });
+
+      await redis.sAdd(`user:${assignedUserId}:tasks`, String(task._id));
+
       // Invalidate assignee's task cache
-      if (data.assignedTo) {
-        await redis.del(`tasks:${data.assignedTo}`);
-      }
+      // if (data.assignedTo) {
+      //   await redis.del(`tasks:${data.assignedTo}`);
+      // }
 
       res.status(201).json({ message: "Task created", response: task });
     } catch (error) {
@@ -36,12 +45,22 @@ export class TaskController {
       const id = req.user.id;
 
       // 1. Check Redis first using a user-specific key
-      const cachedTasks = await redis.get(`tasks:${id}`);
+      const cachedTasksIds = await redis.sMembers(`user:${id}:tasks`);
 
-      if (cachedTasks) {
+      if (cachedTasksIds.length > 0) {
+        const tasks = [];
+
+        for (const taskId of cachedTasksIds) {
+          const task = await redis.hGetAll(`task:${taskId}`);
+
+          tasks.push({
+            id: taskId,
+            ...task
+          })
+        }
         res.status(200).json({
           message: "Tasks fetched from session",
-          response: JSON.parse(cachedTasks),
+          response: tasks,
         });
         return;
       }
