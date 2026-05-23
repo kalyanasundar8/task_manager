@@ -50,7 +50,7 @@ export class AuthController {
       const userData = req.body;
       const user = await AuthService.signinUser(userData);
 
-      // console.log("User", user);
+      console.log("User", user);
 
       res.cookie("access-token", user?.accessToken, {
         httpOnly: true,

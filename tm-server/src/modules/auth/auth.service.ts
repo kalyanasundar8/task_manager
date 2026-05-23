@@ -34,7 +34,7 @@ export class AuthService {
       };
     } catch (error) {
       console.log("Create user error: ", error);
-      throw new Error("Unable to create user");
+      throw error;
     }
   };
 
@@ -45,6 +45,11 @@ export class AuthService {
       const userExists = await Auth.findOne({ email: email });
 
       // console.log("User exists:", userExists);
+
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        throw new Error("Invalid email address");
+      }
 
       if (!userExists) {
         throw new Error("User not exists");
@@ -68,7 +73,7 @@ export class AuthService {
         refreshToken,
       };
     } catch (error) {
-      throw new Error("Unable to signin user");
+      throw error;
     }
   };
 

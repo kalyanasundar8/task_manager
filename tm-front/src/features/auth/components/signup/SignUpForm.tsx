@@ -1,9 +1,8 @@
-import { Button, Form, Input, notification } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { Link } from 'react-router-dom';
-import type { NotificationType } from './types';
 import { SignUp, type SignUpPayload } from '../../services/auth.service';
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import Toast from '../../hooks/Toast';
 
 const SignUpForm = () => {
     // const [api, contextHolder] = notification.useNotification();
@@ -42,12 +41,7 @@ const SignUpForm = () => {
         <div className='w-screen h-screen flex items-center justify-center'>
             {/* {contextHolder} */}
             <div className='w-full max-w-md flex flex-col p-5'>
-                {showToast === true ? (
-                    <div className='flex items-center justify-between bg-red-100 p-3 mb-3'>
-                        <p className='text-sm font-normal text-red-500'>{message.title}</p>
-                        <X size={12} onClick={() => setShowToast(false)} />
-                    </div>
-                ) : ""}
+                <Toast message={message.title} status='error' isOpen={showToast} onClose={() => setShowToast(false)} />
                 <h1 className='text-xl font-bold mb-5'>Create your account</h1>
                 <Form
                     name='basic'

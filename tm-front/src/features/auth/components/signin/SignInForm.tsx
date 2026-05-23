@@ -2,7 +2,7 @@ import { Button, Form, Input } from 'antd';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SignIn, type SignInPayload } from '../../services/auth.service';
-import { X } from 'lucide-react';
+import Toast from '../../hooks/Toast';
 
 const SignInForm = () => {
     const [message, setMessage] = useState<{ title: string, description: string }>({
@@ -32,12 +32,7 @@ const SignInForm = () => {
     return (
         <div className='w-screen h-screen flex items-center justify-center'>
             <div className='w-full max-w-md flex flex-col p-5'>
-                {showToast === true ? (
-                    <div className='flex items-center justify-between bg-red-100 p-3 mb-3'>
-                        <p className='text-sm font-normal text-red-500'>{message.title}</p>
-                        <X size={12} onClick={() => setShowToast(false)} />
-                    </div>
-                ) : ""}
+                <Toast message={message.title} status='error' isOpen={showToast} onClose={() => setShowToast(false)} />
                 <h1 className='text-xl font-bold mb-5'>Sign In to TM</h1>
                 <Form
                     name='basic'
@@ -51,7 +46,7 @@ const SignInForm = () => {
                         <Form.Item
                             label="Email"
                             name="email"
-                            rules={[{ required: true, message: "Please input your email!" }]}
+                            rules={[{ required: true, message: "Please enter you email!" }]}
                         >
                             <Input className='w-full' style={{
                                 paddingTop: "8px",
@@ -65,7 +60,7 @@ const SignInForm = () => {
                         <Form.Item
                             label="Password"
                             name="password"
-                            rules={[{ required: true, message: "Please input your password!" }]}
+                            rules={[{ required: true, message: "Please enter your password!" }]}
                         >
                             <Input className='w-full' style={{
                                 paddingTop: "8px",
